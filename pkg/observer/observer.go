@@ -119,9 +119,9 @@ func (observer *Observer) ListTXs(target string) {
 	})
 
 	for _, tx := range list {
-		txt, txHex := parseTX(tx)
+		txt, _ := parseTX(tx)
 		fmt.Println(txt)
-		observer.SendWebhook(txt, txHex)
+		// observer.SendWebhook(txt, txHex)
 	}
 }
 
@@ -146,14 +146,14 @@ func parseTX(t *tlb.Transaction) (string, string) {
 		if t.IO.In.MsgType == tlb.MsgTypeInternal {
 			in = t.IO.In.AsInternal().Amount.Nano()
 		}
-		if in.Cmp(big.NewInt(0)) != 0 {
-			intTx := t.IO.In.AsInternal()
-			result.WriteString("*TOKEN SELL*\nAmount: `")
-			result.WriteString(tlb.FromNanoTON(in).String())
-			result.WriteString(" TON`\nFrom: `")
-			result.WriteString(intTx.SrcAddr.String())
-			result.WriteString("`\n")
-		}
+	}
+	if in.Cmp(big.NewInt(0)) != 0 {
+		intTx := t.IO.In.AsInternal()
+		result.WriteString("*TOKEN SELL*\nAmount: `")
+		result.WriteString(tlb.FromNanoTON(in).String())
+		result.WriteString(" TON`\nFrom: `")
+		result.WriteString(intTx.SrcAddr.String())
+		result.WriteString("`\n")
 	}
 	if out.Cmp(big.NewInt(0)) != 0 {
 		result.WriteString("*TOKEN BUY*\nAmount: `")
